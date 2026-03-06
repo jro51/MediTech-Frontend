@@ -1,4 +1,4 @@
-export default function Header({name}) {
+export default function Header({ name }) {
   return (
     <header
       className="relative bg-gray-800 after:pointer-events-none after:absolute after:inset-x-0 after:inset-y-0 after:border-y after:border-white/10">
