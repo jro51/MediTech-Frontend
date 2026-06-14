@@ -9,7 +9,7 @@ export function useInventory() {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(`http://localhost:8081/v1/purchase/user/${userId}`, {
+      const response = await fetch(`http://3.215.115.127:8081/v1/purchase/user/${userId}`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (response.ok) {
@@ -26,7 +26,7 @@ export function useInventory() {
   const deleteItem = async (purchaseId) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`http://localhost:8081/v1/purchase/${purchaseId}`, {
+      const response = await fetch(`http://3.215.115.127:8081/v1/purchase/${purchaseId}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });

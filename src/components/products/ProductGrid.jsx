@@ -23,8 +23,8 @@ export default function ProductGrid() {
     const handleSave = async (formData) => {
         const method = formData.id ? "PUT" : "POST";
         const url = formData.id
-            ? `http://localhost:8081/v1/product/${formData.id}`
-            : "http://localhost:8081/v1/product";
+            ? `http://3.215.115.127:8081/v1/product/${formData.id}`
+            : "http://3.215.115.127:8081/v1/product";
 
         try {
             const response = await fetch(url, {
@@ -103,6 +103,7 @@ export default function ProductGrid() {
                 onClose={() => setIsModalOpen(false)}
                 onSave={handleSave}
                 productToEdit={selectedProduct}
+                key={selectedProduct?.id || 'new-product'}
             />
         </main>
     );

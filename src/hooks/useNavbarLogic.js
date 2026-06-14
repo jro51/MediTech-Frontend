@@ -13,7 +13,7 @@ export function useNavbarLogic(setNotifications, clearCart) {
     if (!userId || !token) return;
 
     try {
-      const response = await fetch(`http://localhost:8081/v1/notifications/${userId}`, {
+      const response = await fetch(`http://3.215.115.127:8081/v1/notifications/${userId}`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (response.ok) {
@@ -28,12 +28,18 @@ export function useNavbarLogic(setNotifications, clearCart) {
   // Manejo del Login inicial
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true);
-      fetchNotifications();
-      const interval = setInterval(fetchNotifications, 10000);
-      return () => clearInterval(interval);
-    }
+    
+    // Si no hay token, no hacemos nada
+    if (!token) return;
+
+    // Ejecutamos la carga inicial de notificaciones
+    fetchNotifications();
+
+    // Configuramos el intervalo para actualizar las notificaciones
+    const interval = setInterval(fetchNotifications, 10000);
+
+    // Limpiamos el intervalo al desmontar el componente
+    return () => clearInterval(interval);
   }, [fetchNotifications]);
 
   const handleLogout = (navigate) => {
@@ -54,7 +60,7 @@ export function useNavbarLogic(setNotifications, clearCart) {
     }
 
     try {
-      const response = await fetch("http://localhost:8081/v1/purchase/buy", {
+      const response = await fetch("http://3.215.115.127:8081/v1/purchase/buy", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

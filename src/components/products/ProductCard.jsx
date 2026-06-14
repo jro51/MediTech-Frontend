@@ -9,7 +9,7 @@ export default function ProductCard({ product, isAdmin, onEdit, onRefresh }) {
         if (!window.confirm(`¿Estás seguro de eliminar "${product.name}"?`)) return;
 
         try {
-            const response = await fetch(`http://localhost:8081/v1/product/${product.id}`, {
+            const response = await fetch(`http://3.215.115.127:8081/v1/product/${product.id}`, {
                 method: "DELETE",
                 headers: { "User-Role": "ADMIN" }
             });

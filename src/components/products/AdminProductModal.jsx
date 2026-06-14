@@ -1,32 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function AdminProductModal({ isOpen, onClose, onSave, productToEdit }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    stock: "",
-    image_src: ""
-  });
-
-  useEffect(() => {
+  // Inicializamos el estado directamente con los datos del producto si existe
+  const [formData, setFormData] = useState(() => {
     if (productToEdit) {
-      setFormData({
-        ...productToEdit,
+      return {
+        name: productToEdit.name || "",
         description: productToEdit.description || "",
+        price: productToEdit.price || "",
         stock: productToEdit.stock || 0,
         image_src: productToEdit.image_src || productToEdit.imageSrc || ""
-      });
-    } else {
-      setFormData({
-        name: "",
-        description: "",
-        price: "",
-        stock: "",
-        image_src: ""
-      });
+      };
     }
-  }, [productToEdit, isOpen]);
+    return {
+      name: "",
+      description: "",
+      price: "",
+      stock: "",
+      image_src: ""
+    };
+  });
 
   if (!isOpen) return null;
 
@@ -46,6 +39,7 @@ export default function AdminProductModal({ isOpen, onClose, onSave, productToEd
           onSave(dataToSave);
         }}
           className="space-y-4">
+          
           {/* Nombre */}
           <div>
             <label className="block text-xs text-gray-400 mb-1">Nombre</label>

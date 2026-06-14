@@ -1,129 +1,165 @@
 import { Link, useNavigate, NavLink } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useCart } from "../CartContext";
+import { useTheme } from "../ThemeContext";
 import CartDropdown from "./navbar/CartDropdown";
 import NotificationDropdown from "./navbar/NotificationDropdown";
 import UserMenu from "./navbar/UserMenu";
 import { useNavbarLogic } from "../hooks/useNavbarLogic";
 import { useClickOutside } from "../hooks/useClickOutside";
 
-export default function Navbar() {
+// ─── Toggle moderno sin emojis ────────────────────────────────────────────────
+function ThemeToggle() {
+  const { dark, toggle } = useTheme();
+  return (
+    <button
+      onClick={toggle}
+      title={dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+      className="relative flex items-center w-[52px] h-7 rounded-full transition-colors duration-300 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1a3a6b]"
+      style={{ backgroundColor: dark ? "#1a3a6b" : "#e2e8f0" }}
+    >
+      {/* Ícono sol — izquierda */}
+      <span className="absolute left-1.5 flex items-center justify-center w-4 h-4 transition-opacity duration-200"
+        style={{ opacity: dark ? 0.4 : 1 }}>
+        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke={dark ? "#94a3b8" : "#f59e0b"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+        </svg>
+      </span>
 
+      {/* Ícono luna — derecha */}
+      <span className="absolute right-1.5 flex items-center justify-center w-4 h-4 transition-opacity duration-200"
+        style={{ opacity: dark ? 1 : 0.4 }}>
+        <svg className="w-3 h-3" viewBox="0 0 24 24" fill={dark ? "#e2e8f0" : "#94a3b8"} stroke="none">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      </span>
+
+      {/* Thumb */}
+      <span
+        className="absolute top-0.5 bottom-0.5 w-6 h-6 rounded-full shadow-md transition-all duration-300 flex items-center justify-center"
+        style={{
+          transform: dark ? "translateX(26px)" : "translateX(2px)",
+          backgroundColor: dark ? "#e2e8f0" : "white",
+        }}
+      />
+    </button>
+  );
+}
+
+export default function Navbar() {
   const navigate = useNavigate();
   const { cartCount, cart, clearCart } = useCart();
   const [notifications, setNotifications] = useState([]);
 
-  // Referencias para el click outside
   const cartRef = useRef(null);
   const userRef = useRef(null);
   const notifRef = useRef(null);
 
-  const { 
-    openMenu, setOpenMenu, 
-    showCartModal, setShowCartModal, 
+  const {
+    openMenu, setOpenMenu,
+    showCartModal, setShowCartModal,
     showNotifMenu, setShowNotifMenu,
-    isLoggedIn, handleLogout, handlePurchase 
+    isLoggedIn, handleLogout, handlePurchase,
   } = useNavbarLogic(setNotifications, clearCart);
 
-  // Hook de cierre automático
   useClickOutside([cartRef, userRef, notifRef], () => {
     setOpenMenu(false);
     setShowCartModal(false);
     setShowNotifMenu(false);
   });
 
+  const navLinkClass = ({ isActive }) =>
+    isActive
+      ? "relative text-sm font-semibold text-[#0040A2] dark:text-blue-400 after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-[#0040A2] dark:after:bg-blue-400 after:rounded-full"
+      : "relative text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-[#1a3a6b] dark:hover:text-blue-400 transition-colors duration-200";
+
+  const iconBtn = "p-2 text-gray-400 hover:text-[#0040A2] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 rounded-full transition-colors";
+
   return (
-    <nav className="bg-gray-900/50 sticky top-0 z-40 backdrop-blur-md">
+    <nav className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-40 shadow-sm transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center">
-            <div className="shrink-0">
-              <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-                alt="Your Company" className="size-8" />
+        <div className="flex h-16 items-center justify-between gap-6">
+
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-[#0040A2] flex items-center justify-center">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-3-3v6M4.5 12a7.5 7.5 0 1 1 15 0 7.5 7.5 0 0 1-15 0Z" />
+              </svg>
             </div>
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-4">
-                <NavLink to="/" className={({ isActive }) => isActive ? "rounded-md bg-gray-950/50 px-3 py-2 text-sm font-medium text-white" : "rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white"}>
-                  Productos
-                </NavLink>
-                <NavLink to="/inventario" className={({ isActive }) => isActive ? "rounded-md bg-gray-950/50 px-3 py-2 text-sm font-medium text-white" : "rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white"}>
-                  Inventario
-                </NavLink>
-                <NavLink to="/recordatorio" className={({ isActive }) => isActive ? "rounded-md bg-gray-950/50 px-3 py-2 text-sm font-medium text-white" : "rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white"}>
-                  Crear Recordatorio
-                </NavLink>
-                <NavLink to="/nosotros" className={({ isActive }) => isActive ? "rounded-md bg-gray-950/50 px-3 py-2 text-sm font-medium text-white" : "rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white"}>
-                  Acerca de Nosotros
-                </NavLink>
-              </div>
-            </div>
+            <span className="text-lg font-bold text-[#0040A2] dark:text-blue-400 tracking-tight">PharmaCare</span>
+          </Link>
+
+          {/* Nav links */}
+          <div className="hidden md:flex items-center gap-7 flex-1">
+            <NavLink to="/" end className={navLinkClass}>Products</NavLink>
+            <NavLink to="/inventario" className={navLinkClass}>Inventory</NavLink>
+            <NavLink to="/recordatorio" className={navLinkClass}>Reminders</NavLink>
+            <NavLink to="/nosotros" className={navLinkClass}>About Us</NavLink>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* --- SECCIÓN DE NOTIFICACIONES IA --- */}
+          {/* Search */}
+          <div className="hidden md:flex items-center gap-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-4 py-2 w-52 focus-within:border-[#1a3a6b] dark:focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-[#1a3a6b]/10 transition-all">
+            <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Buscar medicamentos..."
+              className="bg-transparent text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 outline-none w-full"
+            />
+          </div>
+
+          {/* Right icons */}
+          <div className="flex items-center gap-2">
+
+            <ThemeToggle />
+
+            {/* Notificaciones */}
             {isLoggedIn && (
               <div className="relative" ref={notifRef}>
-                <button onClick={() => setShowNotifMenu(!showNotifMenu)} className="relative p-1 text-gray-400 hover:text-white transition-colors">
-                  <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                <button onClick={() => setShowNotifMenu(!showNotifMenu)} className={iconBtn}>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                   </svg>
                   {notifications.length > 0 && (
-                    <span className="absolute top-0 right-0 flex size-4 items-center justify-center rounded-full bg-indigo-500 text-[10px] font-bold text-white animate-pulse">
-                      {notifications.length}
-                    </span>
+                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#1a3a6b] dark:bg-blue-400" />
                   )}
                 </button>
-
-                {showNotifMenu && (
-                  <NotificationDropdown isOpen={showNotifMenu} notifications={notifications}>
-
-                  </NotificationDropdown>
-                )}
+                {showNotifMenu && <NotificationDropdown isOpen={showNotifMenu} notifications={notifications} />}
               </div>
             )}
 
-            {/* CONTENEDOR CARRITO */}
+            {/* Carrito */}
             <div className="relative" ref={cartRef}>
-              <button type="button" onClick={() => setShowCartModal(!showCartModal)}
-                className="relative rounded-full p-1 text-gray-400 hover:text-white focus:outline-none">
-                <svg className="size-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .953.35 1.059.852l.708 2.835m0 0h14.59c.691 0 1.252.562 1.252 1.252a1.125 1.125 0 01-1.125 1.125H5.064m0 0l1.102 4.41a1.125 1.125 0 001.125.923h9.181a1.125 1.125 0 001.125-.923l1.102-4.41M7.5 21a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm12.625 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+              <button onClick={() => setShowCartModal(!showCartModal)} className={iconBtn}>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .953.35 1.059.852l.708 2.835m0 0h14.59c.691 0 1.252.562 1.252 1.252a1.125 1.125 0 01-1.125 1.125H5.064m0 0l1.102 4.41a1.125 1.125 0 001.125.923h9.181a1.125 1.125 0 001.125-.923l1.102-4.41" />
                 </svg>
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#1a3a6b] text-white text-[10px] font-bold flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}
               </button>
-
-              {/* MODAL CARRITO DESPLEGABLE */}
               {showCartModal && (
-                <CartDropdown 
-                  isOpen={showCartModal}
-                  isLoggedIn={isLoggedIn}
-                  onPurchase={() => handlePurchase(cart)}
-                  navigate={navigate}>
-
-                </CartDropdown>
+                <CartDropdown isOpen={showCartModal} isLoggedIn={isLoggedIn} onPurchase={() => handlePurchase(cart)} navigate={navigate} />
               )}
             </div>
 
-            {/* CONTENEDOR USUARIO */}
+            {/* Usuario */}
             <div className="relative" ref={userRef}>
-              <button type="button" onClick={() => setOpenMenu(!openMenu)}
-                className="relative flex items-center gap-2 rounded-full p-1 text-gray-400 hover:text-white focus:outline-none">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-6">
+              <button onClick={() => setOpenMenu(!openMenu)} className={iconBtn}>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
-                {isLoggedIn && <span className="text-sm font-medium text-gray-300 hidden sm:block">Mi Perfil</span>}
               </button>
-
               {openMenu && (
-                <UserMenu isOpen={openMenu} isLoggedIn={isLoggedIn} onLogout={() => handleLogout(navigate)} setOpenMenu={setOpenMenu}>
-
-                </UserMenu>
+                <UserMenu isOpen={openMenu} isLoggedIn={isLoggedIn} onLogout={() => handleLogout(navigate)} setOpenMenu={setOpenMenu} />
               )}
             </div>
+
           </div>
         </div>
       </div>

@@ -1,96 +1,165 @@
 import { useState } from "react";
-import { useNavigate, NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
+
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const navigate = useNavigate();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:8081/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.id);
+        localStorage.setItem("userRole", data.role);
+        window.location.href = "/";
+      } else {
+        setError(data.message || "Credenciales inválidas. Intenta de nuevo.");
+      }
+    } catch {
+      setError("No se pudo conectar con el servidor.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex transition-colors duration-300">
 
-        try {
-            const response = await fetch("http://localhost:8081/v1/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
+      {/* ── Panel izquierdo decorativo ── */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[#1a3a6b] flex-col justify-between p-12">
+        <Link to="/" className="flex items-center gap-2">
+          <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-3-3v6M4.5 12a7.5 7.5 0 1 1 15 0 7.5 7.5 0 0 1-15 0Z" />
+            </svg>
+          </div>
+          <span className="text-white text-xl font-bold tracking-tight">PharmaCare</span>
+        </Link>
 
-            const data = await response.json();
-            console.log("Respuesta completa del servidor:", data);
+        <div>
+          <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
+            Tu salud,<br />gestionada con<br />precisión profesional.
+          </h2>
+          <p className="text-white/60 text-sm leading-relaxed max-w-xs">
+            Accede a tu panel personal para gestionar medicamentos,
+            recordatorios y tu inventario de salud.
+          </p>
 
-            if (response.ok) {
-                localStorage.setItem("token", data.token); 
-                localStorage.setItem("userId", data.id);
-                localStorage.setItem("userRole", data.role);
-                alert("¡Bienvenido a MedicTech!");
-                window.location.href = "/"; 
-            } else {
-                alert("Error: " + (data.message || "Credenciales inválidas"));
-            }
-        } catch (error) {
-            console.error("Error al conectar:", error);
-        }
-    };
-
-    return (
-        <div className="flex min-h-full flex-col justify-center px-6 py-40 lg:px-8">
-            <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company" className="mx-auto h-10 w-auto" />
-                <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-white">Inicia Sesión en MediTec</h2>
-            </div>
-
-            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                <form onSubmit={handleSubmit} action="#" method="POST" className="space-y-6">
-                    <div>
-                        <label for="email" className="block text-sm/6 font-medium text-gray-100">Correo Electrónico</label>
-                        <div className="mt-2">
-                            <input 
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                id="email" 
-                                type="email" 
-                                name="email" 
-                                required autocomplete="email" 
-                                className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6" />
-                        </div>
-                    </div>
-
-                    <div>
-                        <div className="flex items-center justify-between">
-                            <label for="password" className="block text-sm/6 font-medium text-gray-100">Contraseña</label>
-                            <div className="text-sm">
-                                {/* <a href="#" className="font-semibold text-indigo-400 hover:text-indigo-300">¿Olvidaste tu contraseña?</a> */}
-                            </div>
-                        </div>
-                        <div className="mt-2">
-                            <input 
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                id="password" 
-                                type="password" 
-                                name="password" 
-                                required autocomplete="current-password" 
-                                className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6" />
-                        </div>
-                    </div>
-
-                    <div>
-                        <button type="submit" className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">Iniciar Sesión</button>
-                    </div>
-                    <p className="mt-10 text-center text-sm/6 text-gray-400">
-                        ¿No tienes una cuenta? 
-                        {/* <a href="#" className="font-semibold text-indigo-400 hover:text-indigo-300"> Crear Cuenta</a> */}
-                        <NavLink
-                        to="/register"
-                        className="px-2 font-semibold text-indigo-400 hover:text-indigo-300"
-                        >
-                            Crear Cuenta
-                        </NavLink>
-                    </p>
-                    
-                </form>
-            </div>
+          {/* Feature pills */}
+          <div className="mt-10 flex flex-col gap-3">
+            {[
+              { icon: "🔔", text: "Recordatorios inteligentes de dosis" },
+              { icon: "📦", text: "Control de inventario personal" },
+              { icon: "🤖", text: "Recomendaciones con IA" },
+            ].map((f) => (
+              <div key={f.text} className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-3">
+                <span className="text-lg">{f.icon}</span>
+                <span className="text-white/80 text-sm font-medium">{f.text}</span>
+              </div>
+            ))}
+          </div>
         </div>
-    );
+
+        <p className="text-white/30 text-xs">© 2024 PharmaCare Systems</p>
+      </div>
+
+      {/* ── Panel derecho: formulario ── */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm">
+
+          {/* Logo móvil */}
+          <Link to="/" className="flex items-center gap-2 mb-10 lg:hidden">
+            <div className="w-8 h-8 rounded-lg bg-[#1a3a6b] flex items-center justify-center">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-3-3v6M4.5 12a7.5 7.5 0 1 1 15 0 7.5 7.5 0 0 1-15 0Z" />
+              </svg>
+            </div>
+            <span className="text-lg font-bold text-[#1a3a6b] dark:text-blue-400">PharmaCare</span>
+          </Link>
+
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-1">
+            Bienvenido de nuevo
+          </h1>
+          <p className="text-sm text-gray-400 mb-8">
+            Ingresa tus credenciales para continuar.
+          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                Correo electrónico
+              </label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tu@correo.com"
+                className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#1a3a6b]/20 focus:border-[#1a3a6b] transition-all"
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                Contraseña
+              </label>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#1a3a6b]/20 focus:border-[#1a3a6b] transition-all"
+              />
+            </div>
+
+            {/* Error */}
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl px-4 py-3">
+                <p className="text-red-600 dark:text-red-400 text-xs font-medium">{error}</p>
+              </div>
+            )}
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#1a3a6b] hover:bg-[#14305a] disabled:bg-[#1a3a6b]/50 text-white font-bold py-3 rounded-xl text-sm transition-colors shadow-md shadow-[#1a3a6b]/20 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                  Iniciando sesión...
+                </>
+              ) : "Iniciar Sesión"}
+            </button>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-gray-400">
+            ¿No tienes una cuenta?{" "}
+            <NavLink to="/register" className="font-semibold text-[#1a3a6b] dark:text-blue-400 hover:underline">
+              Crear cuenta
+            </NavLink>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }
