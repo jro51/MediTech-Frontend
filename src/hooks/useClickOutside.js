@@ -1,15 +1,13 @@
 import { useEffect } from "react";
 
+// ─── Hook: cierra dropdowns al hacer click fuera ───────────────────────────────
 export function useClickOutside(refs, handler) {
   useEffect(() => {
     const listener = (event) => {
-      if (refs.some(ref => !ref.current || ref.current.contains(event.target))) {
-        return;
-      }
+      if (refs.some((ref) => !ref.current || ref.current.contains(event.target))) return;
       handler(event);
     };
-
     document.addEventListener("mousedown", listener);
     return () => document.removeEventListener("mousedown", listener);
   }, [refs, handler]);
-} 
+}

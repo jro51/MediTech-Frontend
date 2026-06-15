@@ -1,34 +1,25 @@
 import { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
+import { authApi } from "../api";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [email,    setEmail]    = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  
+  const [loading,  setLoading]  = useState(false);
+  const [error,    setError]    = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8081/v1/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("userId", data.id);
-        localStorage.setItem("userRole", data.role);
-        window.location.href = "/";
-      } else {
-        setError(data.message || "Credenciales inválidas. Intenta de nuevo.");
-      }
-    } catch {
-      setError("No se pudo conectar con el servidor.");
+      const data = await authApi.login(email, password);
+      localStorage.setItem("token",    data.token);
+      localStorage.setItem("userId",   data.id);
+      localStorage.setItem("userRole", data.role);
+      window.location.href = "/";
+    } catch (err) {
+      setError(err.message || "Credenciales inválidas. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }
@@ -37,7 +28,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex transition-colors duration-300">
 
-      {/* ── Panel izquierdo decorativo ── */}
+      {/* Panel izquierdo decorativo */}
       <div className="hidden lg:flex lg:w-1/2 bg-[#1a3a6b] flex-col justify-between p-12">
         <Link to="/" className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
@@ -47,17 +38,13 @@ export default function Login() {
           </div>
           <span className="text-white text-xl font-bold tracking-tight">PharmaCare</span>
         </Link>
-
         <div>
           <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
             Tu salud,<br />gestionada con<br />precisión profesional.
           </h2>
           <p className="text-white/60 text-sm leading-relaxed max-w-xs">
-            Accede a tu panel personal para gestionar medicamentos,
-            recordatorios y tu inventario de salud.
+            Accede a tu panel personal para gestionar medicamentos, recordatorios y tu inventario de salud.
           </p>
-
-          {/* Feature pills */}
           <div className="mt-10 flex flex-col gap-3">
             {[
               { icon: "🔔", text: "Recordatorios inteligentes de dosis" },
@@ -71,15 +58,12 @@ export default function Login() {
             ))}
           </div>
         </div>
-
         <p className="text-white/30 text-xs">© 2024 PharmaCare Systems</p>
       </div>
 
-      {/* ── Panel derecho: formulario ── */}
+      {/* Formulario */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm">
-
-          {/* Logo móvil */}
           <Link to="/" className="flex items-center gap-2 mb-10 lg:hidden">
             <div className="w-8 h-8 rounded-lg bg-[#1a3a6b] flex items-center justify-center">
               <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -89,57 +73,33 @@ export default function Login() {
             <span className="text-lg font-bold text-[#1a3a6b] dark:text-blue-400">PharmaCare</span>
           </Link>
 
-          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-1">
-            Bienvenido de nuevo
-          </h1>
-          <p className="text-sm text-gray-400 mb-8">
-            Ingresa tus credenciales para continuar.
-          </p>
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-1">Bienvenido de nuevo</h1>
+          <p className="text-sm text-gray-400 mb-8">Ingresa tus credenciales para continuar.</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email */}
             <div>
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                 Correo electrónico
               </label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                 placeholder="tu@correo.com"
-                className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#1a3a6b]/20 focus:border-[#1a3a6b] transition-all"
-              />
+                className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#1a3a6b]/20 focus:border-[#1a3a6b] transition-all" />
             </div>
-
-            {/* Password */}
             <div>
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                 Contraseña
               </label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+              <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#1a3a6b]/20 focus:border-[#1a3a6b] transition-all"
-              />
+                className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-900 placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#1a3a6b]/20 focus:border-[#1a3a6b] transition-all" />
             </div>
-
-            {/* Error */}
             {error && (
               <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl px-4 py-3">
                 <p className="text-red-600 dark:text-red-400 text-xs font-medium">{error}</p>
               </div>
             )}
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-[#1a3a6b] hover:bg-[#14305a] disabled:bg-[#1a3a6b]/50 text-white font-bold py-3 rounded-xl text-sm transition-colors shadow-md shadow-[#1a3a6b]/20 flex items-center justify-center gap-2"
-            >
+            <button type="submit" disabled={loading}
+              className="w-full bg-[#1a3a6b] hover:bg-[#14305a] disabled:bg-[#1a3a6b]/50 text-white font-bold py-3 rounded-xl text-sm transition-colors shadow-md shadow-[#1a3a6b]/20 flex items-center justify-center gap-2">
               {loading ? (
                 <>
                   <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">

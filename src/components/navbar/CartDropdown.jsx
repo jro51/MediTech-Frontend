@@ -1,4 +1,4 @@
-import { useCart } from "../../CartContext";
+import { useCart } from "../../contexts/CartContext";
 
 export default function CartDropdown({ isOpen, onPurchase, isLoggedIn, navigate }) {
   const { cart, cartCount, removeFromCart } = useCart();
@@ -32,11 +32,8 @@ export default function CartDropdown({ isOpen, onPurchase, isLoggedIn, navigate 
         )}
       </div>
       {isLoggedIn ? (
-        <button
-          onClick={onPurchase}
-          disabled={cart.length === 0}
-          className="mt-4 w-full bg-[#1a3a6b] hover:bg-[#14305a] disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-400 text-white font-bold py-2 rounded-lg text-sm transition-colors"
-        >
+        <button onClick={onPurchase} disabled={cart.length === 0}
+          className="mt-4 w-full bg-[#1a3a6b] hover:bg-[#14305a] disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-400 text-white font-bold py-2 rounded-lg text-sm transition-colors">
           Finalizar Compra
         </button>
       ) : (

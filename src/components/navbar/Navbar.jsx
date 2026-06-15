@@ -1,14 +1,14 @@
 import { Link, useNavigate, NavLink } from "react-router-dom";
-import { useState, useRef } from "react";
-import { useCart } from "../CartContext";
-import { useTheme } from "../ThemeContext";
-import CartDropdown from "./navbar/CartDropdown";
-import NotificationDropdown from "./navbar/NotificationDropdown";
-import UserMenu from "./navbar/UserMenu";
-import { useNavbarLogic } from "../hooks/useNavbarLogic";
-import { useClickOutside } from "../hooks/useClickOutside";
+import { useRef, useState } from "react";
+import { useCart }          from "../../contexts/CartContext";
+import { useTheme }         from "../../contexts/ThemeContext";
+import { useNavbarLogic }   from "../../hooks/useNavbarLogic";
+import { useClickOutside }  from "../../hooks/useClickOutside";
+import CartDropdown          from "./CartDropdown";
+import NotificationDropdown  from "./NotificationDropdown";
+import UserMenu              from "./UserMenu";
 
-// ─── Toggle moderno sin emojis ────────────────────────────────────────────────
+// ─── Toggle de tema ────────────────────────────────────────────────────────────
 function ThemeToggle() {
   const { dark, toggle } = useTheme();
   return (
@@ -18,26 +18,22 @@ function ThemeToggle() {
       className="relative flex items-center w-[52px] h-7 rounded-full transition-colors duration-300 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1a3a6b]"
       style={{ backgroundColor: dark ? "#1a3a6b" : "#e2e8f0" }}
     >
-      {/* Ícono sol — izquierda */}
       <span className="absolute left-1.5 flex items-center justify-center w-4 h-4 transition-opacity duration-200"
         style={{ opacity: dark ? 0.4 : 1 }}>
-        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke={dark ? "#94a3b8" : "#f59e0b"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none"
+          stroke={dark ? "#94a3b8" : "#f59e0b"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="4" />
           <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
         </svg>
       </span>
-
-      {/* Ícono luna — derecha */}
       <span className="absolute right-1.5 flex items-center justify-center w-4 h-4 transition-opacity duration-200"
         style={{ opacity: dark ? 1 : 0.4 }}>
         <svg className="w-3 h-3" viewBox="0 0 24 24" fill={dark ? "#e2e8f0" : "#94a3b8"} stroke="none">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
         </svg>
       </span>
-
-      {/* Thumb */}
       <span
-        className="absolute top-0.5 bottom-0.5 w-6 h-6 rounded-full shadow-md transition-all duration-300 flex items-center justify-center"
+        className="absolute top-0.5 bottom-0.5 w-6 h-6 rounded-full shadow-md transition-all duration-300"
         style={{
           transform: dark ? "translateX(26px)" : "translateX(2px)",
           backgroundColor: dark ? "#e2e8f0" : "white",
@@ -47,13 +43,14 @@ function ThemeToggle() {
   );
 }
 
+// ─── Navbar ────────────────────────────────────────────────────────────────────
 export default function Navbar() {
   const navigate = useNavigate();
   const { cartCount, cart, clearCart } = useCart();
   const [notifications, setNotifications] = useState([]);
 
-  const cartRef = useRef(null);
-  const userRef = useRef(null);
+  const cartRef  = useRef(null);
+  const userRef  = useRef(null);
   const notifRef = useRef(null);
 
   const {
@@ -93,10 +90,10 @@ export default function Navbar() {
 
           {/* Nav links */}
           <div className="hidden md:flex items-center gap-7 flex-1">
-            <NavLink to="/" end className={navLinkClass}>Products</NavLink>
-            <NavLink to="/inventario" className={navLinkClass}>Inventory</NavLink>
-            <NavLink to="/recordatorio" className={navLinkClass}>Reminders</NavLink>
-            <NavLink to="/nosotros" className={navLinkClass}>About Us</NavLink>
+            <NavLink to="/"           end className={navLinkClass}>Products</NavLink>
+            <NavLink to="/inventario"     className={navLinkClass}>Inventory</NavLink>
+            <NavLink to="/recordatorio"   className={navLinkClass}>Reminders</NavLink>
+            <NavLink to="/nosotros"       className={navLinkClass}>About Us</NavLink>
           </div>
 
           {/* Search */}
@@ -104,16 +101,12 @@ export default function Navbar() {
             <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
-            <input
-              type="text"
-              placeholder="Buscar medicamentos..."
-              className="bg-transparent text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 outline-none w-full"
-            />
+            <input type="text" placeholder="Buscar medicamentos..."
+              className="bg-transparent text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 outline-none w-full" />
           </div>
 
           {/* Right icons */}
           <div className="flex items-center gap-2">
-
             <ThemeToggle />
 
             {/* Notificaciones */}
@@ -144,7 +137,8 @@ export default function Navbar() {
                 )}
               </button>
               {showCartModal && (
-                <CartDropdown isOpen={showCartModal} isLoggedIn={isLoggedIn} onPurchase={() => handlePurchase(cart)} navigate={navigate} />
+                <CartDropdown isOpen={showCartModal} isLoggedIn={isLoggedIn}
+                  onPurchase={() => handlePurchase(cart)} navigate={navigate} />
               )}
             </div>
 
@@ -156,10 +150,10 @@ export default function Navbar() {
                 </svg>
               </button>
               {openMenu && (
-                <UserMenu isOpen={openMenu} isLoggedIn={isLoggedIn} onLogout={() => handleLogout(navigate)} setOpenMenu={setOpenMenu} />
+                <UserMenu isOpen={openMenu} isLoggedIn={isLoggedIn}
+                  onLogout={() => handleLogout(navigate)} setOpenMenu={setOpenMenu} />
               )}
             </div>
-
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useCart } from "../CartContext";
-import { getAllProducts } from "../services/productService";
+import { useCart } from "../contexts/CartContext";
+import { productsApi } from "../api/productsApi";
 
 // ─── Hero ────────────────────────────────────────────────────────────────────
 function HeroSection() {
@@ -150,7 +150,7 @@ function FeaturedProducts() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAllProducts()
+    productsApi.getAll()
       .then((data) => {
         if (data) setProducts(data.slice(0, 4));
       })

@@ -1,46 +1,34 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { purchasesApi } from "../api";
 
+// ─── Hook: inventario personal del usuario ─────────────────────────────────────
 export function useInventory() {
-  const [items, setItems] = useState([]);
+  const [items, setItems]   = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError]   = useState(null);
 
-  const fetchInventory = async () => {
+  const load = useCallback(async () => {
     const userId = localStorage.getItem("userId");
-    const token = localStorage.getItem("token");
+    if (!userId) { setLoading(false); return; }
 
+    setLoading(true);
+    setError(null);
     try {
-      const response = await fetch(`http://3.215.115.127:8081/v1/purchase/user/${userId}`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setItems(data);
-      }
-    } catch (error) {
-      console.error("Error al cargar inventario:", error);
+      const data = await purchasesApi.getByUser(userId);
+      setItems(data ?? []);
+    } catch (err) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
-
-  const deleteItem = async (purchaseId) => {
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(`http://3.215.115.127:8081/v1/purchase/${purchaseId}`, {
-        method: "DELETE",
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      if (response.ok) {
-        setItems(items.filter(item => item.id !== purchaseId));
-      }
-    } catch (error) {
-      console.error("Error al eliminar item:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchInventory();
   }, []);
 
-  return { items, loading, deleteItem };
+  useEffect(() => { load(); }, [load]);
+
+  const deleteItem = async (purchaseId) => {
+    await purchasesApi.remove(purchaseId);
+    setItems((prev) => prev.filter((item) => item.id !== purchaseId));
+  };
+
+  return { items, loading, error, deleteItem };
 }
