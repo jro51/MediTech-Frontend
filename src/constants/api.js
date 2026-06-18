@@ -1,30 +1,30 @@
 // ─── Configuración central de la API ──────────────────────────────────────────
 // Cambia SOLO esta variable para apuntar a otro servidor (dev, staging, prod)
-export const API_BASE_URL = "http://3.215.115.127:8081/v1";
+export const API_BASE_URL = "http://localhost:8080";
 
 // Endpoints agrupados por dominio
 export const ENDPOINTS = {
   // Auth
   AUTH: {
-    LOGIN:    `${API_BASE_URL}/auth/login`,
-    REGISTER: `${API_BASE_URL}/auth/register`,
+    LOGIN:    `${API_BASE_URL}/api/auth/login`,
+    REGISTER: `${API_BASE_URL}/api/auth/register`,
   },
 
   // Productos
   PRODUCTS: {
-    ALL:        `${API_BASE_URL}/product`,
-    BY_ID: (id) => `${API_BASE_URL}/product/${id}`,
+    ALL:        `${API_BASE_URL}/api/products`,
+    BY_ID: (id) => `${API_BASE_URL}/api/products/${id}`,
   },
 
   // Compras
   PURCHASES: {
-    BUY:           `${API_BASE_URL}/purchase/buy`,
-    BY_USER: (uid) => `${API_BASE_URL}/purchase/user/${uid}`,
-    BY_ID:   (id)  => `${API_BASE_URL}/purchase/${id}`,
+    BUY:           `${API_BASE_URL}/api/purchases/buy`,
+    BY_USER: (uid) => `${API_BASE_URL}/api/purchases/user/${uid}`,
+    BY_ID:   (id)  => `${API_BASE_URL}/api/purchases/${id}`,
   },
 
   // Notificaciones
   NOTIFICATIONS: {
-    BY_USER: (uid) => `${API_BASE_URL}/notifications/${uid}`,
+    BY_USER: (uid) => `${API_BASE_URL}/api/notifications/${uid}`,
   },
 };

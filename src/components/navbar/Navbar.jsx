@@ -4,6 +4,8 @@ import { useCart }          from "../../contexts/CartContext";
 import { useTheme }         from "../../contexts/ThemeContext";
 import { useNavbarLogic }   from "../../hooks/useNavbarLogic";
 import { useClickOutside }  from "../../hooks/useClickOutside";
+import { useProductSearch } from "../../hooks/useProductSearch";
+import SearchDropdown from "./SearchDropdown";
 import CartDropdown          from "./CartDropdown";
 import NotificationDropdown  from "./NotificationDropdown";
 import UserMenu              from "./UserMenu";
@@ -52,19 +54,30 @@ export default function Navbar() {
   const cartRef  = useRef(null);
   const userRef  = useRef(null);
   const notifRef = useRef(null);
+  const searchRef = useRef(null);
 
   const {
-    openMenu, setOpenMenu,
-    showCartModal, setShowCartModal,
-    showNotifMenu, setShowNotifMenu,
+    activeDropdown, toggleDropdown, closeDropdowns,
     isLoggedIn, handleLogout, handlePurchase,
   } = useNavbarLogic(setNotifications, clearCart);
 
-  useClickOutside([cartRef, userRef, notifRef], () => {
-    setOpenMenu(false);
-    setShowCartModal(false);
-    setShowNotifMenu(false);
+  const { query, results, isOpen, handleChange, handleFocus, close, clear } = useProductSearch();
+
+  // un solo array con los 3 refs — si el click cae fuera de los 3, cerramos todo
+  useClickOutside([cartRef, userRef, notifRef, searchRef], () => {
+    closeDropdowns();
+    close(); // ← cierra también el dropdown de búsqueda
   });
+
+  const handleSelectProduct = (product) => {
+    clear();
+    navigate(`/productos/${product.id}`); // ← ya no usamos state, vamos directo al detalle
+  };
+
+  const handleViewAll = () => {
+    navigate("/productos"); // ← catálogo completo, sin query param por ahora
+    clear();
+  };
 
   const navLinkClass = ({ isActive }) =>
     isActive
@@ -97,12 +110,36 @@ export default function Navbar() {
           </div>
 
           {/* Search */}
-          <div className="hidden md:flex items-center gap-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-4 py-2 w-52 focus-within:border-[#1a3a6b] dark:focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-[#1a3a6b]/10 transition-all">
-            <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-            <input type="text" placeholder="Buscar medicamentos..."
-              className="bg-transparent text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 outline-none w-full" />
+          <div ref={searchRef} className="hidden md:block relative w-52">
+            <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-4 py-2 focus-within:border-[#1a3a6b] dark:focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-[#1a3a6b]/10 transition-all">
+              <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+              </svg>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => handleChange(e.target.value)}
+                onFocus={handleFocus}
+                placeholder="Buscar medicamentos..."
+                className="bg-transparent text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 outline-none w-full"
+              />
+              {query && (
+                <button onClick={clear} className="text-gray-300 hover:text-gray-500 shrink-0">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            {isOpen && (
+              <SearchDropdown
+                query={query}
+                results={results}
+                onSelect={handleSelectProduct}
+                onViewAll={handleViewAll}
+              />
+            )}
           </div>
 
           {/* Right icons */}
@@ -112,7 +149,7 @@ export default function Navbar() {
             {/* Notificaciones */}
             {isLoggedIn && (
               <div className="relative" ref={notifRef}>
-                <button onClick={() => setShowNotifMenu(!showNotifMenu)} className={iconBtn}>
+                <button onClick={() => toggleDropdown("notifications")} className={iconBtn}>
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                   </svg>
@@ -120,13 +157,15 @@ export default function Navbar() {
                     <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#1a3a6b] dark:bg-blue-400" />
                   )}
                 </button>
-                {showNotifMenu && <NotificationDropdown isOpen={showNotifMenu} notifications={notifications} />}
+                {activeDropdown === "notifications" && (
+                  <NotificationDropdown isOpen notifications={notifications} />
+                )}
               </div>
             )}
 
             {/* Carrito */}
             <div className="relative" ref={cartRef}>
-              <button onClick={() => setShowCartModal(!showCartModal)} className={iconBtn}>
+              <button onClick={() => toggleDropdown("cart")} className={iconBtn}>
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .953.35 1.059.852l.708 2.835m0 0h14.59c.691 0 1.252.562 1.252 1.252a1.125 1.125 0 01-1.125 1.125H5.064m0 0l1.102 4.41a1.125 1.125 0 001.125.923h9.181a1.125 1.125 0 001.125-.923l1.102-4.41" />
                 </svg>
@@ -136,22 +175,22 @@ export default function Navbar() {
                   </span>
                 )}
               </button>
-              {showCartModal && (
-                <CartDropdown isOpen={showCartModal} isLoggedIn={isLoggedIn}
+              {activeDropdown === "cart" && (
+                <CartDropdown isOpen isLoggedIn={isLoggedIn}
                   onPurchase={() => handlePurchase(cart)} navigate={navigate} />
               )}
             </div>
 
             {/* Usuario */}
             <div className="relative" ref={userRef}>
-              <button onClick={() => setOpenMenu(!openMenu)} className={iconBtn}>
+              <button onClick={() => toggleDropdown("user")} className={iconBtn}>
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
               </button>
-              {openMenu && (
-                <UserMenu isOpen={openMenu} isLoggedIn={isLoggedIn}
-                  onLogout={() => handleLogout(navigate)} setOpenMenu={setOpenMenu} />
+              {activeDropdown === "user" && (
+                <UserMenu isOpen isLoggedIn={isLoggedIn}
+                  onLogout={() => handleLogout(navigate)} setOpenMenu={closeDropdowns} />
               )}
             </div>
           </div>

@@ -9,6 +9,9 @@ export const productsApi = {
   getAll: () =>
     http.get(ENDPOINTS.PRODUCTS.ALL),
 
+  getById: (id) =>
+    http.get(ENDPOINTS.PRODUCTS.BY_ID(id)),
+
   /**
    * Crea un producto nuevo (solo ADMIN)
    */

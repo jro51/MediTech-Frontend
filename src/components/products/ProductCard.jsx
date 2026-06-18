@@ -13,6 +13,10 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete }) {
       <div className="aspect-square w-full overflow-hidden rounded-xl bg-gray-800 relative">
         <img
           src={product.imageSrc || "https://via.placeholder.com/300?text=Sin+Imagen"}
+          onError={(e) => {
+            e.target.onerror = null; // evita loop infinito si el placeholder también falla
+            e.target.src = "https://placehold.co/300x300/e8eef5/1a3a6b?text=Sin+Imagen";
+          }}
           className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
           alt={product.name}
         />

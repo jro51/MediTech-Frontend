@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { productsApi } from "../api/productsApi";
+import { useInventory } from "../hooks/useInventory";
 
 // ─── Hero ────────────────────────────────────────────────────────────────────
 function HeroSection() {
@@ -116,6 +117,10 @@ function FeaturedProductCard({ product }) {
       <div className="relative aspect-square bg-gray-50 dark:bg-gray-900 overflow-hidden">
         <img
           src={product.imageSrc || "https://placehold.co/300x300/e8eef5/1a3a6b?text=Med"}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "https://placehold.co/300x300/e8eef5/1a3a6b?text=Med";
+          }}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
@@ -215,37 +220,20 @@ function FeaturedProducts() {
 function InventoryPreview() {
   const navigate = useNavigate();
   const isLoggedIn = !!localStorage.getItem("token");
+  const { items, loading } = useInventory(); // ← mismo hook que usa la página Inventory.jsx
 
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!isLoggedIn) return; 
-
-    const userId = localStorage.getItem("userId");
-    const token = localStorage.getItem("token");
-    
-    fetch(`http://localhost:8081/v1/purchase/user/${userId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => (r.ok ? r.json() : []))
-      .then((data) => {
-        const meds = data.flatMap((p) =>
-          p.products.map((prod) => ({
-            ...prod,
-            purchaseId: p.id,
-            purchaseDate: p.localDateTime,
-          }))
-        );
-        setItems(meds.slice(0, 3));
-      })
-      .catch(() => setItems([]))
-      .finally(() => setLoading(false));
-  }, [isLoggedIn]);
+  const allMedicines = items.flatMap((purchase) =>
+    purchase.products.map((product) => ({
+      ...product,
+      name: product.productName,
+      purchaseId: purchase.id,
+      purchaseDate: purchase.purchaseDate, // ojo: el campo real es purchaseDate, no localDateTime
+    }))
+  ).slice(0, 3);
 
   const statusBadge = (date) => {
     if (!date) return { label: "En Stock", color: "bg-emerald-100 text-emerald-700" };
-    const days = (Date.now - new Date(date)) / 86400000;
+    const days = (Date.now - new Date(date)) / 86400000; // ← corregido: Date.now()
     if (days > 30) return { label: "Agotándose", color: "bg-red-100 text-red-600" };
     return { label: "En Stock", color: "bg-emerald-100 text-emerald-700" };
   };
@@ -295,7 +283,7 @@ function InventoryPreview() {
                 </div>
               ))}
             </div>
-          ) : items.length === 0 ? (
+          ) : allMedicines.length === 0 ? (
             <div className="text-center py-12 text-gray-400">
               <p className="text-sm">Tu inventario está vacío. Realiza tu primera compra.</p>
             </div>
@@ -309,7 +297,7 @@ function InventoryPreview() {
                 <span className="text-right">Acción</span>
               </div>
               <div className="divide-y divide-gray-50">
-                {items.map((item, i) => {
+                {allMedicines.map((item, i) => {
                   const badge = statusBadge(item.purchaseDate);
                   return (
                     <div

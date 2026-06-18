@@ -1,12 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { purchasesApi, notificationsApi } from "../api";
+import { useToast } from "../contexts/ToastContext";
 
 // ─── Hook: lógica del Navbar ───────────────────────────────────────────────────
 export function useNavbarLogic(setNotifications, clearCart) {
-  const [openMenu,       setOpenMenu]       = useState(false);
-  const [showCartModal,  setShowCartModal]  = useState(false);
-  const [showNotifMenu,  setShowNotifMenu]  = useState(false);
-  const [isLoggedIn,     setIsLoggedIn]     = useState(!!localStorage.getItem("token"));
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+  const { toast } = useToast(); // ← nuevo
+
+  const toggleDropdown = (name) => {
+    setActiveDropdown((current) => (current === name ? null : name));
+  };
+
+  const closeDropdowns = () => setActiveDropdown(null);
 
   const fetchNotifications = useCallback(async () => {
     const userId = localStorage.getItem("userId");
@@ -29,7 +35,7 @@ export function useNavbarLogic(setNotifications, clearCart) {
   const handleLogout = (navigate) => {
     ["token", "userId", "userRole"].forEach((k) => localStorage.removeItem(k));
     setIsLoggedIn(false);
-    setOpenMenu(false);
+    closeDropdowns();
     setNotifications([]);
     navigate("/login");
   };
@@ -37,24 +43,28 @@ export function useNavbarLogic(setNotifications, clearCart) {
   const handlePurchase = async (cart) => {
     const userId = localStorage.getItem("userId");
     if (!userId) {
-      alert("No hay una sesión activa. Por favor, inicia sesión.");
+      toast.warning("Inicia sesión primero", "No hay una sesión activa.");
       return;
     }
     try {
       const data = await purchasesApi.buy(userId, cart.map((p) => p.id));
-      alert(`¡Compra exitosa! Total: $${data.total}`);
+      toast.success("Compra exitosa", `Total: $${data.total.toFixed(2)} · ${cart.length} producto${cart.length > 1 ? "s" : ""}`);
       clearCart();
-      setShowCartModal(false);
+      closeDropdowns();
       setTimeout(fetchNotifications, 3_000);
     } catch (err) {
-      alert(err.message.includes("403") ? "Tu sesión ha expirado." : "Error al procesar la compra.");
+      const isSessionExpired = err.message.includes("403");
+      toast.error(
+        isSessionExpired ? "Tu sesión ha expirado" : "Error al procesar la compra",
+        isSessionExpired ? "Vuelve a iniciar sesión para continuar." : undefined
+      );
     }
   };
 
   return {
-    openMenu, setOpenMenu,
-    showCartModal, setShowCartModal,
-    showNotifMenu, setShowNotifMenu,
+    activeDropdown,
+    toggleDropdown,
+    closeDropdowns,
     isLoggedIn,
     handleLogout,
     handlePurchase,

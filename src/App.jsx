@@ -7,6 +7,8 @@ import Products    from "./pages/Products";
 import Inventory   from "./pages/Inventory";
 import Reminder    from "./pages/Reminder";
 import About       from "./pages/About";
+import AllProducts  from "./pages/AllProducts";   // ← nuevo
+import ProductDetail from "./pages/ProductDetail"; // ← nuevo
 
 export default function App() {
   return (
@@ -21,10 +23,12 @@ export default function App() {
 
           {/* Con navbar */}
           <Route element={<AppLayout />}>
-            <Route path="/"             element={<Products />} />
-            <Route path="/inventario"   element={<Inventory />} />
-            <Route path="/recordatorio" element={<Reminder />} />
-            <Route path="/nosotros"     element={<About />} />
+            <Route path="/"               element={<Products />} />
+            <Route path="/productos"      element={<AllProducts />} />      {/* ← nuevo */}
+            <Route path="/productos/:id"  element={<ProductDetail />} />    {/* ← nuevo */}
+            <Route path="/inventario"     element={<Inventory />} />
+            <Route path="/recordatorio"   element={<Reminder />} />
+            <Route path="/nosotros"       element={<About />} />
           </Route>
         </Routes>
       </div>
