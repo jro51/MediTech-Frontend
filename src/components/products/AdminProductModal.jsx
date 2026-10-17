@@ -11,9 +11,15 @@ export default function AdminProductModal({ isOpen, onClose, onSave, productToEd
         price:       productToEdit.price       || "",
         stock:       productToEdit.stock       || 0,
         image_src:   productToEdit.image_src   || productToEdit.imageSrc || "",
+        expirationDate:       productToEdit.expirationDate ?? "",
+        minStock:             productToEdit.minStock ?? 5,
+        requiresPrescription: productToEdit.requiresPrescription ?? false,
       };
     }
-    return { name: "", description: "", price: "", stock: "", image_src: "" };
+    return {
+      name: "", description: "", price: "", stock: "", image_src: "",
+      expirationDate: "", minStock: 5, requiresPrescription: false,
+    };
   });
 
   if (!isOpen) return null;
@@ -61,6 +67,25 @@ export default function AdminProductModal({ isOpen, onClose, onSave, productToEd
                 className="w-full bg-gray-950 border border-gray-800 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none" />
             </div>
           </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Fecha de vencimiento</label>
+              <input type="date" {...field("expirationDate")}
+                className="w-full bg-gray-950 border border-gray-800 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none" />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Stock mínimo (alerta)</label>
+              <input type="number" min="0" {...field("minStock")}
+                className="w-full bg-gray-950 border border-gray-800 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none" />
+            </div>
+          </div>
+
+          <label className="flex items-center gap-2 text-sm text-gray-300">
+            <input type="checkbox" checked={Boolean(formData.requiresPrescription)}
+              onChange={(e) => setFormData({ ...formData, requiresPrescription: e.target.checked })} />
+            Requiere receta médica
+          </label>
 
           <div>
             <label className="block text-xs text-gray-400 mb-1">URL de Imagen</label>

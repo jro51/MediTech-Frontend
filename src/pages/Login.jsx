@@ -36,20 +36,20 @@ export default function Login() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-3-3v6M4.5 12a7.5 7.5 0 1 1 15 0 7.5 7.5 0 0 1-15 0Z" />
             </svg>
           </div>
-          <span className="text-white text-xl font-bold tracking-tight">PharmaCare</span>
+          <span className="text-white text-xl font-bold tracking-tight">MediTech</span>
         </Link>
         <div>
           <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
-            Tu salud,<br />gestionada con<br />precisión profesional.
+            Reserva hoy,<br />recoge cuando<br />esté listo.
           </h2>
           <p className="text-white/60 text-sm leading-relaxed max-w-xs">
-            Accede a tu panel personal para gestionar medicamentos, recordatorios y tu inventario de salud.
+            Reserva tus medicamentos en línea y recógelos en la botica cuando estén listos.
           </p>
           <div className="mt-10 flex flex-col gap-3">
             {[
-              { icon: "🔔", text: "Recordatorios inteligentes de dosis" },
-              { icon: "📦", text: "Control de inventario personal" },
-              { icon: "🤖", text: "Recomendaciones con IA" },
+              { icon: "🛒", text: "Reserva desde el catálogo" },
+              { icon: "🔔", text: "Aviso cuando tu pedido está listo" },
+              { icon: "📍", text: "Recojo en tienda, sin filas" },
             ].map((f) => (
               <div key={f.text} className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-3">
                 <span className="text-lg">{f.icon}</span>
@@ -58,7 +58,7 @@ export default function Login() {
             ))}
           </div>
         </div>
-        <p className="text-white/30 text-xs">© 2024 PharmaCare Systems</p>
+        <p className="text-white/30 text-xs">Proyecto de portafolio · MediTech</p>
       </div>
 
       {/* Formulario */}
@@ -70,7 +70,7 @@ export default function Login() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-3-3v6M4.5 12a7.5 7.5 0 1 1 15 0 7.5 7.5 0 0 1-15 0Z" />
               </svg>
             </div>
-            <span className="text-lg font-bold text-[#1a3a6b] dark:text-blue-400">PharmaCare</span>
+            <span className="text-lg font-bold text-[#1a3a6b] dark:text-blue-400">MediTech</span>
           </Link>
 
           <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-1">Bienvenido de nuevo</h1>

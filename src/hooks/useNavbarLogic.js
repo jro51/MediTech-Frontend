@@ -17,8 +17,12 @@ export function useNavbarLogic(setNotifications, clearCart) {
   const fetchNotifications = useCallback(async () => {
     const userId = localStorage.getItem("userId");
     if (!userId) return;
+    const isAdmin = localStorage.getItem("userRole") === "ADMIN";
     try {
-      const data = await notificationsApi.getByUser(userId);
+      // La botica ve sus alertas y reservas nuevas; el cliente ve el estado de sus pedidos
+      const data = isAdmin
+        ? await notificationsApi.getAdminInbox()
+        : await notificationsApi.getByUser(userId);
       setNotifications(data ?? []);
     } catch {
       // silencioso: las notificaciones no son críticas
@@ -43,20 +47,20 @@ export function useNavbarLogic(setNotifications, clearCart) {
   const handlePurchase = async (cart) => {
     const userId = localStorage.getItem("userId");
     if (!userId) {
-      toast.warning("Inicia sesión primero", "No hay una sesión activa.");
+      toast.warning("Inicia sesión primero", "Necesitas una cuenta para reservar.");
       return;
     }
     try {
       const data = await purchasesApi.buy(userId, cart.map((p) => p.id));
-      toast.success("Compra exitosa", `Total: $${data.total.toFixed(2)} · ${cart.length} producto${cart.length > 1 ? "s" : ""}`);
+      toast.success("Reserva realizada", `Total: $${data.total.toFixed(2)} · te avisaremos cuando esté listo para recoger`);
       clearCart();
       closeDropdowns();
       setTimeout(fetchNotifications, 3_000);
     } catch (err) {
       const isSessionExpired = err.message.includes("403");
       toast.error(
-        isSessionExpired ? "Tu sesión ha expirado" : "Error al procesar la compra",
-        isSessionExpired ? "Vuelve a iniciar sesión para continuar." : undefined
+        isSessionExpired ? "Tu sesión ha expirado" : "No se pudo reservar el pedido",
+        isSessionExpired ? "Vuelve a iniciar sesión para continuar." : err.message
       );
     }
   };

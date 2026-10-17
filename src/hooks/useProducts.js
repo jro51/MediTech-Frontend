@@ -31,6 +31,11 @@ export function useProducts() {
       price:       parseFloat(formData.price),
       stock:       parseInt(formData.stock),
       imageSrc:    formData.imageSrc || formData.image_src,
+      expirationDate: formData.expirationDate || null,
+      ...(formData.minStock !== "" && formData.minStock != null
+        ? { minStock: parseInt(formData.minStock) }
+        : {}),
+      requiresPrescription: Boolean(formData.requiresPrescription),
     };
 
     if (formData.id) {

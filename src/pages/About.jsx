@@ -7,8 +7,8 @@ export default function About() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       ),
-      title: "IA Predictiva",
-      desc: "Recomendaciones personalizadas basadas en cada compra y tu historial de salud.",
+      title: "Alertas de inventario",
+      desc: "Avisos automáticos de stock bajo y de productos vencidos o por vencer para la botica.",
     },
     {
       color: "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400",
@@ -17,8 +17,8 @@ export default function About() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
         </svg>
       ),
-      title: "Control Total",
-      desc: "Gestión de inventario personal y recordatorios de dosis en tiempo real.",
+      title: "Reserva y recojo",
+      desc: "El cliente reserva en línea, sigue el estado de su pedido y lo recoge en la tienda.",
     },
     {
       color: "bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400",
@@ -27,19 +27,19 @@ export default function About() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
       ),
-      title: "Escalabilidad",
-      desc: "Arquitectura robusta con microservicios y Kafka para miles de usuarios simultáneos.",
+      title: "Arquitectura de microservicios",
+      desc: "Servicios independientes comunicados por eventos (Kafka): pedidos, inventario y notificaciones.",
     },
   ];
 
   const stats = [
-    { num: "99%", label: "Precisión en dosis" },
-    { num: "24/7", label: "Asesoría disponible" },
-    { num: "<2h", label: "Entrega express" },
-    { num: "10k+", label: "Usuarios activos" },
+    { num: "7", label: "Microservicios" },
+    { num: "4", label: "Estados de un pedido" },
+    { num: "2", label: "Tipos de alerta de inventario" },
+    { num: "CI/CD", label: "Pruebas automáticas en cada cambio" },
   ];
 
-  const stack = ["Java Spring Boot", "React", "Python AI", "Apache Kafka", "PostgreSQL", "Docker"];
+  const stack = ["Java Spring Boot", "React", "Python FastAPI", "Apache Kafka", "MySQL", "Docker"];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
@@ -48,11 +48,11 @@ export default function About() {
       <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <p className="text-xs font-bold tracking-widest text-[#0040A2] dark:text-blue-400 uppercase mb-1">
-            La empresa
+            El proyecto
           </p>
-          <h1 className="text-3xl font-extrabold text-[#0040A2] dark:text-white">Acerca de Nosotros</h1>
+          <h1 className="text-3xl font-extrabold text-[#0040A2] dark:text-white">Acerca de MediTech</h1>
           <p className="text-gray-400 text-sm mt-1">
-            Tecnología al servicio de tu bienestar.
+            Reservas y control de inventario para boticas.
           </p>
         </div>
       </div>
@@ -70,12 +70,12 @@ export default function About() {
               Nuestra Misión
             </span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-6">
-              Innovación en el<br />Cuidado Médico
+              Menos faltantes,<br />menos vencidos
             </h2>
             <p className="text-white/70 text-base leading-relaxed">
-              Este proyecto nace con el objetivo de fusionar el e-commerce farmacéutico con
-              la potencia de la Inteligencia Artificial. No es solo una tienda — es un
-              asistente personal para tu salud.
+              Muchas boticas pequeñas llevan su stock a mano y se enteran de que algo se agotó
+              o venció cuando ya es tarde. Este proyecto de portafolio plantea una solución:
+              reservas con recojo en tienda y alertas automáticas de inventario.
             </p>
           </div>
         </div>
@@ -125,12 +125,11 @@ export default function About() {
         {/* ── Quote ── */}
         <blockquote className="text-center max-w-2xl mx-auto pb-8">
           <p className="text-gray-400 dark:text-gray-500 text-sm italic leading-relaxed">
-            "En PharmaCare Systems, creemos que la tecnología debe estar al servicio de la vida.
-            Nuestra misión es simplificar la gestión farmacéutica para que tú solo te preocupes
-            de sentirte bien."
+            "Proyecto de portafolio: está pensado a partir de un problema real, pero todavía
+            no se ha validado con una botica real."
           </p>
           <p className="mt-4 text-xs font-semibold text-gray-400 dark:text-gray-600 uppercase tracking-widest">
-            — Equipo PharmaCare
+            — Sobre este proyecto
           </p>
         </blockquote>
 
