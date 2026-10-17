@@ -1,4 +1,5 @@
 import { useCart } from "../../contexts/CartContext";
+import { isLowStock, isOutOfStock } from "../../utils/inventory";
 
 // ─── ProductCard ───────────────────────────────────────────────────────────────
 // Componente puramente de presentación: recibe datos y callbacks, no hace fetch.
@@ -56,14 +57,30 @@ export default function ProductCard({ product, isAdmin, onEdit, onDelete }) {
             Stock: {product.stock}
           </span>
         </div>
+        <div className="mt-1 flex flex-wrap gap-1">
+          {product.requiresPrescription && (
+            <span className="text-[10px] font-semibold text-amber-300 bg-amber-900/40 px-2 py-0.5 rounded">
+              Requiere receta
+            </span>
+          )}
+          {isOutOfStock(product) && (
+            <span className="text-[10px] font-semibold text-red-300 bg-red-900/40 px-2 py-0.5 rounded">Agotado</span>
+          )}
+          {isLowStock(product) && (
+            <span className="text-[10px] font-semibold text-orange-300 bg-orange-900/40 px-2 py-0.5 rounded">
+              Quedan pocas unidades
+            </span>
+          )}
+        </div>
         <p className="mt-1 text-xs text-gray-400 line-clamp-2 h-8">{product.description}</p>
         <p className="mt-2 text-xl font-black text-indigo-400">${product.price}</p>
 
         <button
           onClick={() => addToCart(product)}
-          className="mt-4 w-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold py-2.5 rounded-xl transition-all active:scale-95 shadow-lg shadow-indigo-600/20"
+          disabled={isOutOfStock(product)}
+          className="mt-4 w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed text-white text-sm font-bold py-2.5 rounded-xl transition-all active:scale-95 shadow-lg shadow-indigo-600/20"
         >
-          Añadir al carrito
+          {isOutOfStock(product) ? "Sin stock" : "Añadir al carrito"}
         </button>
       </div>
     </div>

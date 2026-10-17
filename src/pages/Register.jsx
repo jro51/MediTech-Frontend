@@ -38,21 +38,21 @@ export default function Register() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-3-3v6M4.5 12a7.5 7.5 0 1 1 15 0 7.5 7.5 0 0 1-15 0Z" />
             </svg>
           </div>
-          <span className="text-white text-xl font-bold tracking-tight">PharmaCare</span>
+          <span className="text-white text-xl font-bold tracking-tight">MediTech</span>
         </Link>
         <div>
           <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
-            Crea tu cuenta<br />y empieza a cuidar<br />tu salud hoy.
+            Crea tu cuenta<br />y reserva tus<br />medicamentos.
           </h2>
           <p className="text-white/60 text-sm leading-relaxed max-w-xs">
-            Únete a miles de usuarios que ya gestionan sus medicamentos de forma inteligente.
+            Reserva desde el catálogo y recoge tu pedido en la botica cuando esté listo.
           </p>
           <div className="mt-10 grid grid-cols-2 gap-4">
             {[
-              { num: "99%", label: "Precisión en dosis" },
-              { num: "24/7", label: "Asesoría disponible" },
-              { num: "<2h",  label: "Entrega express" },
-              { num: "100%", label: "Certificado" },
+              { num: "1", label: "Reserva desde el catálogo" },
+              { num: "2", label: "Aviso cuando esté listo" },
+              { num: "3", label: "Recojo en la botica" },
+              { num: "0", label: "Costos de envío" },
             ].map((s) => (
               <div key={s.label} className="bg-white/10 rounded-xl px-4 py-4">
                 <p className="text-white text-2xl font-black">{s.num}</p>
@@ -61,7 +61,7 @@ export default function Register() {
             ))}
           </div>
         </div>
-        <p className="text-white/30 text-xs">© 2024 PharmaCare Systems</p>
+        <p className="text-white/30 text-xs">Proyecto de portafolio · MediTech</p>
       </div>
 
       {/* Formulario */}
@@ -73,7 +73,7 @@ export default function Register() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-3-3v6M4.5 12a7.5 7.5 0 1 1 15 0 7.5 7.5 0 0 1-15 0Z" />
               </svg>
             </div>
-            <span className="text-lg font-bold text-[#1a3a6b] dark:text-blue-400">PharmaCare</span>
+            <span className="text-lg font-bold text-[#1a3a6b] dark:text-blue-400">MediTech</span>
           </Link>
 
           <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-1">Crear cuenta</h1>

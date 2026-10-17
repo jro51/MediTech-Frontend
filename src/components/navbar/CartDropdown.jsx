@@ -34,11 +34,11 @@ export default function CartDropdown({ isOpen, onPurchase, isLoggedIn, navigate 
       {isLoggedIn ? (
         <button onClick={onPurchase} disabled={cart.length === 0}
           className="mt-4 w-full bg-[#1a3a6b] hover:bg-[#14305a] disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-400 text-white font-bold py-2 rounded-lg text-sm transition-colors">
-          Finalizar Compra
+          Reservar para recoger
         </button>
       ) : (
         <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-center">
-          <p className="text-amber-700 dark:text-amber-400 text-[11px] mb-2">Inicia sesión para finalizar tu compra</p>
+          <p className="text-amber-700 dark:text-amber-400 text-[11px] mb-2">Inicia sesión para reservar tu pedido</p>
           <button onClick={() => navigate("/login")} className="text-[#1a3a6b] dark:text-blue-400 text-xs font-bold underline">
             Ir al Login
           </button>

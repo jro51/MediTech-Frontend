@@ -62,6 +62,7 @@ export default function Navbar() {
   } = useNavbarLogic(setNotifications, clearCart);
 
   const { query, results, isOpen, handleChange, handleFocus, close, clear } = useProductSearch();
+  const isAdmin = isLoggedIn && localStorage.getItem("userRole") === "ADMIN";
 
   // un solo array con los 3 refs — si el click cae fuera de los 3, cerramos todo
   useClickOutside([cartRef, userRef, notifRef, searchRef], () => {
@@ -98,15 +99,15 @@ export default function Navbar() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-3-3v6M4.5 12a7.5 7.5 0 1 1 15 0 7.5 7.5 0 0 1-15 0Z" />
               </svg>
             </div>
-            <span className="text-lg font-bold text-[#0040A2] dark:text-blue-400 tracking-tight">PharmaCare</span>
+            <span className="text-lg font-bold text-[#0040A2] dark:text-blue-400 tracking-tight">MediTech</span>
           </Link>
 
           {/* Nav links */}
           <div className="hidden md:flex items-center gap-7 flex-1">
-            <NavLink to="/"           end className={navLinkClass}>Products</NavLink>
-            <NavLink to="/inventario"     className={navLinkClass}>Inventory</NavLink>
-            <NavLink to="/recordatorio"   className={navLinkClass}>Reminders</NavLink>
-            <NavLink to="/nosotros"       className={navLinkClass}>About Us</NavLink>
+            <NavLink to="/"           end className={navLinkClass}>Productos</NavLink>
+            {isLoggedIn && <NavLink to="/pedidos" className={navLinkClass}>Mis pedidos</NavLink>}
+            {isAdmin && <NavLink to="/admin" className={navLinkClass}>Panel de la botica</NavLink>}
+            <NavLink to="/nosotros"       className={navLinkClass}>Acerca de</NavLink>
           </div>
 
           {/* Search */}
